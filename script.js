@@ -12,6 +12,8 @@ const carModelSelect = document.getElementById("car-model");
 const newCategoryInput = document.getElementById("new-category");
 const saveCategoryButton = document.getElementById("save-category");
 const clearCategoryButton = document.getElementById("clear-category");
+const modelSection = document.getElementById("model-section");
+const clearModelButton = document.getElementById("clear-model");
 
 // Populate the model dropdown based on selected brand
 carBrandSelect.addEventListener("change", function () {
@@ -23,13 +25,15 @@ carBrandSelect.addEventListener("change", function () {
     saveCategoryButton.classList.remove("hidden-button");
     clearCategoryButton.classList.remove("hidden-button");
     newCategoryInput.focus();
+    modelSection.style.display = "none"; // Hide model section when adding a new category
   } else {
+    // Hide the new category input fields
     newCategoryInput.classList.add("hidden-input");
     saveCategoryButton.classList.add("hidden-button");
     clearCategoryButton.classList.add("hidden-button");
+    
+    // Reset and populate models for the selected brand
     carModelSelect.innerHTML = '<option value="">Choose Model</option>';
-
-    // Populate models for the selected brand
     if (carModels[selectedBrand]) {
       carModels[selectedBrand].forEach(model => {
         const option = document.createElement("option");
@@ -38,6 +42,7 @@ carBrandSelect.addEventListener("change", function () {
         carModelSelect.appendChild(option);
       });
     }
+    modelSection.style.display = selectedBrand ? "block" : "none"; // Show model section if a valid brand is selected
   }
 });
 
@@ -46,19 +51,22 @@ saveCategoryButton.addEventListener("click", function () {
   const newCategory = newCategoryInput.value.trim();
 
   if (newCategory) {
-    // Add the new category as an option
+    // Add the new category as an option before "Add New Category" option
     const option = document.createElement("option");
     option.value = newCategory;
     option.textContent = newCategory;
-    carBrandSelect.insertBefore(option, carBrandSelect.lastChild); // Insert before "Add New Category" option
-    carModels[newCategory] = [];  // Initialize empty models array for new category
+    carBrandSelect.insertBefore(option, carBrandSelect.querySelector(".add-category-option"));
+    carModels[newCategory] = []; // Initialize empty models array for new category
     carBrandSelect.value = newCategory; // Select the new category
+    
+    // Show model section after saving new category
+    modelSection.style.display = "block";
 
-    // Hide input fields after saving
+    // Hide input fields and clear the new category input
     newCategoryInput.classList.add("hidden-input");
     saveCategoryButton.classList.add("hidden-button");
     clearCategoryButton.classList.add("hidden-button");
-    newCategoryInput.value = "";  // Clear input field
+    newCategoryInput.value = ""; // Clear input field
   }
 });
 
@@ -67,10 +75,12 @@ clearCategoryButton.addEventListener("click", function () {
   newCategoryInput.classList.add("hidden-input");
   saveCategoryButton.classList.add("hidden-button");
   clearCategoryButton.classList.add("hidden-button");
-  newCategoryInput.value = "";  // Clear input field
+  newCategoryInput.value = ""; // Clear input field
 });
 
-// Clear model selection when clear model button is clicked
+// Clear model selection and reset brand selection when clear model button is clicked
 clearModelButton.addEventListener("click", function () {
-  carModelSelect.value = "";
+  carBrandSelect.value = ""; // Reset brand selection
+  carModelSelect.innerHTML = '<option value="">Choose Model</option>'; // Reset models
+  modelSection.style.display = "none"; // Hide model section
 });
